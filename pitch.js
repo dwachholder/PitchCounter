@@ -1,3 +1,6 @@
+// PitchCounter.js
+// Dominik Wachholder
+
 var PitchCounter = (function () {
 	var _parent;
 	var _currentTime;
@@ -5,7 +8,7 @@ var PitchCounter = (function () {
 	var _interval;
 	var _settings;
 
-	var _load = function(parent, settings) {
+	var _init = function(parent, settings) {
 		_parent = parent;
 		_settings = settings;
 		_currentTime = settings.time;
@@ -15,9 +18,8 @@ var PitchCounter = (function () {
 	var _start = function() {
 		_active = true;
 		_interval = setInterval(function() {
-			if(_currentTime == 0) {
-				_reset();
-			} else {
+			if(_currentTime == 0) _reset();
+			else {
 				--_currentTime;
 				updateOutput();
 			}
@@ -43,6 +45,7 @@ var PitchCounter = (function () {
 	};
 
 	var _setTime = function(seconds) {
+		if(isNaN(seconds)) seconds = 0;
 		_settings.time = seconds;
 		_reset();
 	};
@@ -52,6 +55,7 @@ var PitchCounter = (function () {
 	};
 
 	var _setThreshold = function(seconds) {
+		if(isNaN(seconds)) seconds = 0;
 		_settings.threshold = seconds;
 		_reset();
 	};
@@ -61,16 +65,13 @@ var PitchCounter = (function () {
 	};
 
 	var updateOutput = function() {
-		if(_currentTime < _settings.threshold) {
-			_parent.css("color", "red");
-		} else {
-			_parent.css("color", "white");
-		}
+		if(_currentTime < _settings.threshold) _parent.css("color", "red");
+		else _parent.css("color", "white");
 		_parent.text("0" + parseInt(_currentTime / 60) + ":" + (((_currentTime % 60) < 10) ? "0" : "") + (_currentTime % 60));
 	};
 
 	return {
-		load: _load,
+		init: _init,
 		start: _start,
 		reset: _reset,
 		toggle: _toggle,

@@ -1,3 +1,4 @@
+<!-- Pitch Counter, Dominik Wachholder-->
 <html>
 <head>
 	<meta charset="UTF-8">
@@ -5,57 +6,80 @@
 
 	<script src="jquery-1.11.0.min.js"></script>
 	<link href='http://fonts.googleapis.com/css?family=Roboto:700,400' rel='stylesheet' type='text/css'>
+	<link rel="stylesheet" type="text/css" href="pitch.css">
 	<style>
 		* { margin: 0; }
+		hr { clear: both; display: block; visibility:hidden; height: 0px; }
 		body { background-color: #2a2a2a; font-family: "Roboto"; }	
-		#counter { font-weight: bold; font-size: 250px; width: 100%; text-align: center; color: white; }
 		#powered { text-align: center; color: #777777; font-weight: 400; font-size: 17px; }
 		#powered a { text-decoration: underline; color: #777777; }
 		#menu { color: #777777; text-align: right; font-size: 14px; margin: 15px 10px 0 0; text-align: center; }
 		#menu #settings { position: absolute; top: 15px; right: 10px; text-align: right; }
 		#menu a { text-decoration: underline; color: #777777; }
 		#info { background-color: #f5f5f5; height: 38px; display: none; padding: 15px 0 0 0; text-align: center; }
-		#info input[type=text] { border-width: 0px; border-bottom: 1px solid #cccccc; background-color: #f5f5f5; width: 35px; padding: 0 3px 0 0; text-align: center; font-size: 15px; font-weight: 700; }
+		#info input[type=text] { border-width: 0px; border-bottom: 1px solid #cccccc; background-color: #f5f5f5; width: 35px; padding: 0 3px 0 0; margin: 0 20px 0 5px; text-align: center; font-size: 15px; font-weight: 700; }
+		#info .item { display:inline-block; margin: 0 15px 0 15px; }
 	</style>
 
 	<script type="text/javascript" src="pitch.js"></script>
 	<script type="text/javascript">
 		window.onload = function() {
-			PitchCounter.load($("#counter"), { "time": 120, "threshold": 10 });
+			PitchCounter.init($("#counter"), { "time": 120, "threshold": 10 });
 			window.onkeyup = function(key) {
-				if(key.keyCode == 32) {
-					$("#info").slideUp();
-					PitchCounter.toggle();
-				} else if(key.keyCode == 27) {
-					PitchCounter.reset();
+				switch(key.keyCode) {
+					case 32:	$("#info").slideUp(slideTime);	// BLANK
+								PitchCounter.toggle();
+								break;
+					case 27: 	PitchCounter.reset();			// ESC
+								break;
+					case 67: 	info("configure");				// c
+								break;
+					case 72: 	info("help");					// h
+								break;
 				}
 			};
 		}
 
+		var currentInfo = "";
+		var slideTime = 400;
+
 		function info(type) {
-			var info = $("#info");
-			if(info.is(":hidden")) {
+			var infodiv = $("#info");
+			infodiv.empty();
+			if(infodiv.is(":hidden")) {
 				PitchCounter.reset();
 
 				if(type == "configure") {
-					var html = "Time:&nbsp;&nbsp;<input type='text' id='time' value='" + PitchCounter.getTime() + "' maxlength='3'>";
-					html += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Threshold:&nbsp;&nbsp;<input type='text' id='threshold' value='" + PitchCounter.getThreshold() + "' maxlength='2'>";
-					info.html(html);
+					infodiv.append("Time:");
+					infodiv.append($("<input>", { "type": "text", "id": "time", "value": PitchCounter.getTime(), "maxlength": "3" }));
+					infodiv.append("Threshold:");
+					infodiv.append($("<input>", { "type": "text", "id": "threshold", "value": PitchCounter.getThreshold(), "maxlength": "2" }));
 					
 					$("#time").bind("change keyup input", function() {
-						PitchCounter.setTime($("#time").val());
+						PitchCounter.setTime(parseInt($("#time").val()));
 					});
+
 					$("#threshold").bind("change keyup input", function() {
-						PitchCounter.setThreshold($("#threshold").val());		
+						PitchCounter.setThreshold(parseInt($("#threshold").val()));		
 					});
 				} else {
-					info.text(type);	
+					infodiv.append($("<div>", { "class": "item", "text": "[BLANK] = Start/Stop" }));
+					infodiv.append($("<div>", { "class": "item", "text": "[ESC] = Reset" }));
+					infodiv.append($("<hr>", {}));
 				}
-				info.slideDown();
-			} else { 
-				info.slideUp();
+
+				infodiv.slideDown(slideTime);
+				currentInfo = type;
+			} else {
+				infodiv.slideUp(slideTime, function() {
+					if(currentInfo != type) {
+						currentInfo = type;
+						info(type);
+					} else currentInfo = "";
+				});
 			}
 		}
+
 	</script>
 
 </head>
