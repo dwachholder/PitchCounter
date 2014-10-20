@@ -9,9 +9,11 @@ Keyboard Commands
 ======================
 [BLANK] = Start/Stop
 [ESC] = Reset
+[C] = Configure
+[H] = Help
 
 Touch Commands
 ======================
 [SINGLE-TAP] = Start/Stop
-[DOUBLE-TAP] = RESET
-[SWIPE] = RESET
+[DOUBLE-TAP] = Reset
+[SWIPE] = Reset
