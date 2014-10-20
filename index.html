@@ -4,7 +4,8 @@
 	<meta charset="UTF-8">
 	<title>Pitch Counter</title>
 
-	<script src="jquery-1.11.0.min.js"></script>
+	<script type="text/javascript" src="jquery-1.11.0.min.js"></script>
+	<script type="text/javascript" src="hammer.js"></script>
 	<link href='http://fonts.googleapis.com/css?family=Roboto:700,400' rel='stylesheet' type='text/css'>
 	<link rel="stylesheet" type="text/css" href="pitch.css">
 	<style>
@@ -38,6 +39,24 @@
 								break;
 				}
 			};
+
+			var mc = new Hammer.Manager(document.body);
+			mc.add( new Hammer.Tap({ event: 'doubletap', taps: 2 }) );
+			mc.add( new Hammer.Tap({ event: 'singletap' }) );
+			mc.get('singletap').requireFailure('doubletap');
+			mc.get('doubletap').recognizeWith('singletap');
+			mc.on("singletap", function(ev) {
+			    $("#info").slideUp(slideTime);
+				PitchCounter.toggle();
+			});
+			mc.on("doubletap", function(ev) {
+			    PitchCounter.reset();
+			});
+
+			var mc2 = new Hammer(document.body);
+			mc2.on("panleft panright", function(ev) {
+				PitchCounter.reset();
+			});
 		}
 
 		var currentInfo = "";
